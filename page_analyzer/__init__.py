@@ -1,9 +1,3 @@
-from .app import app
-from dotenv import load_dotenv
+from page_analyzer.app import app
 
-
-load_dotenv()
-
-__all__ = [
-    'app',
-]
+__all__ = ('app',)
