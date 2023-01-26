@@ -2,27 +2,27 @@
 
 {% block content %}
 
-    <h1>Сайт: {{ data[1] }}</h1>
+    <h1>Сайт: {{ show_url[1] }}</h1>
         <div class="table-responsive">
             <table class="table table-bordered table-hover text-nowrap" data-test="url">
                 <tbody>
                     <tr>
                       <td>ID</td>
-                      <td>{{ data[0] }}</td>
+                      <td>{{ show_url[0] }}</td>
                     </tr>
                     <tr>
                       <td>Имя</td>
-                      <td>{{ data[1] }}</td>
+                      <td>{{ show_url[1] }}</td>
                     </tr>
                     <tr>
                       <td>Дата создания</td>
-                      <td>{{ data[2] }}</td>
+                      <td>{{ show_url[2] }}</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
     <h2 class="mt-5 mb-3">Проверки</h2>
-        <form method="post" action="/urls/1/checks">
+        <form method="post" action="/urls/{{ show_url[0] }}/checks">
             <input type="submit" class="btn btn-primary" value="Запустить проверку">
         </form>
         <div>
@@ -36,6 +36,16 @@
                         <th>description</th>
                         <th>Дата создания</th>
                     </tr>
+                    {% for check in check_url %}
+                    <tr>
+                        <th>{{ check[0] }}</th>
+                        <th>Код ответа</th>
+                        <th>h1</th>
+                        <th>title</th>
+                        <th>description</th>
+                        <th>{{ check[5] }}</th>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>

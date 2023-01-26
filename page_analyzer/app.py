@@ -25,9 +25,9 @@ def get_urls():
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
     cur.execute(open("database.sql", "r").read())
-    cur.execute('SELECT * FROM urls')
+    cur.execute('SELECT * FROM urls ORDER BY id DESC')
     result = cur.fetchall()
-    return render_template('all_urls.html', data=result)
+    return render_template('all_urls.html', all_urls=result)
 
 
 @app.post('/urls')
@@ -37,7 +37,7 @@ def add_url():
         flash("Некорректный URL", "danger")
         if not data:
             flash("URL обязателен", "danger")
-        return render_template('index.html', data=data), 422
+        return render_template('index.html', not_correct_data=data), 422
 
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
@@ -49,7 +49,7 @@ def add_url():
     if not result:
         cur.execute('INSERT INTO urls (name) VALUES (%s)', (data,))
         cur.execute('SELECT id FROM urls WHERE urls.name = %s', (data,))
-        id = cur.fetchone()
+        id = cur.fetchone()[0]
         conn.commit()
         flash("Страница успешно добавлена", "success")
         cur.close()
@@ -69,7 +69,27 @@ def show_url(id):
     cur.execute(open("database.sql", "r").read())
     cur.execute('SELECT * FROM urls WHERE urls.id = %s', (id,))
     result = cur.fetchone()
+    if not result:
+        cur.close()
+        conn.close()
+        return os.abort(404)
+    cur.execute('SELECT * FROM url_checks WHERE url_checks.url_id = %s ORDER BY id DESC', (id,))
+    check = cur.fetchall()
     conn.commit()
     cur.close()
     conn.close()
-    return render_template('show.html', data=result)
+    return render_template('show.html', check_url=check, show_url=result)
+
+
+@app.post('/urls/<id>/checks')
+def check_url(id):
+    conn = psycopg2.connect(DATABASE_URL)
+    cur = conn.cursor()
+    cur.execute(open("database.sql", "r").read())
+    cur.execute('INSERT INTO url_checks (url_id) VALUES (%s)', (id,))
+    conn.commit()
+    cur.close()
+    conn.close()
+    flash('Страница успешно проверена', 'success')
+    return redirect(url_for('show_url', id=id))
+
