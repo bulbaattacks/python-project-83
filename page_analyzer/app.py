@@ -1,5 +1,5 @@
 import secrets
-
+import requests
 import psycopg2
 from flask import Flask, render_template, flash, \
     url_for, request, redirect
@@ -86,7 +86,12 @@ def check_url(id):
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
     cur.execute(open("database.sql", "r").read())
-    cur.execute('INSERT INTO url_checks (url_id) VALUES (%s)', (id,))
+
+    cur.execute('SELECT name FROM urls WHERE urls.id = %s', (id,))
+    name = cur.fetchone()[0]
+    r = requests.get(name)
+    status_code = r.status_code
+    cur.execute('INSERT INTO url_checks (url_id, status_code) VALUES (%s, %s)', (id, status_code,))
     conn.commit()
     cur.close()
     conn.close()
