@@ -72,7 +72,7 @@ def show_url(id):
     if not result:
         cur.close()
         conn.close()
-        return os.abort(404)
+        return render_template('404.html'), 404
     cur.execute('SELECT * FROM url_checks WHERE url_checks.url_id = %s ORDER BY id DESC', (id,))
     check = cur.fetchall()
     conn.commit()
