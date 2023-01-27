@@ -28,16 +28,15 @@ def get_urls():
     cur.execute(
         '''
         SELECT urls.id, urls.name, url_checks.status_code, url_checks.created_at
-        FROM urls 
+        FROM urls
         LEFT JOIN url_checks on urls.id=url_checks.url_id
         AND url_checks.created_at =
             (SELECT MAX(created_at)
                 FROM url_checks
                 WHERE url_id = urls.id)
         ORDER BY urls.id DESC
-        ''') #проверить что проверка соответствует сайту и вывести последнюю проверку
+        ''')
     result = cur.fetchall()
-    print(result)
     cur.close()
     conn.close()
     return render_template('all_urls.html', all_urls=result)
@@ -86,7 +85,10 @@ def show_url(id):
         cur.close()
         conn.close()
         return render_template('404.html'), 404
-    cur.execute('SELECT * FROM url_checks WHERE url_checks.url_id = %s ORDER BY id DESC', (id,))
+    cur.execute('''
+        SELECT * FROM url_checks
+        WHERE url_checks.url_id = %s
+        ORDER BY id DESC''', (id,))
     check = cur.fetchall()
     conn.commit()
     cur.close()
@@ -109,10 +111,11 @@ def check_url(id):
         conn.close()
         flash('Произошла ошибка при проверке', 'danger')
         return redirect(url_for('show_url', id=id))
-    cur.execute('INSERT INTO url_checks (url_id, status_code) VALUES (%s, %s)', (id, status_code,))
+    cur.execute('''
+        INSERT INTO url_checks (url_id, status_code)
+        VALUES (%s, %s)''', (id, status_code,))
     conn.commit()
     cur.close()
     conn.close()
     flash('Страница успешно проверена', 'success')
     return redirect(url_for('show_url', id=id))
-
