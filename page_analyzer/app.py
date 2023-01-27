@@ -25,8 +25,21 @@ def get_urls():
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
     cur.execute(open("database.sql", "r").read())
-    cur.execute('SELECT * FROM urls ORDER BY id DESC')
+    cur.execute(
+        '''
+        SELECT urls.id, urls.name, url_checks.status_code, url_checks.created_at
+        FROM urls 
+        LEFT JOIN url_checks on urls.id=url_checks.url_id
+        AND url_checks.created_at =
+            (SELECT MAX(created_at)
+                FROM url_checks
+                WHERE url_id = urls.id)
+        ORDER BY urls.id DESC
+        ''') #проверить что проверка соответствует сайту и вывести последнюю проверку
     result = cur.fetchall()
+    print(result)
+    cur.close()
+    conn.close()
     return render_template('all_urls.html', all_urls=result)
 
 
@@ -89,8 +102,13 @@ def check_url(id):
 
     cur.execute('SELECT name FROM urls WHERE urls.id = %s', (id,))
     name = cur.fetchone()[0]
-    r = requests.get(name)
-    status_code = r.status_code
+    try:
+        r = requests.get(name)
+        status_code = r.status_code
+    except requests.exceptions.RequestException:
+        conn.close()
+        flash('Произошла ошибка при проверке', 'danger')
+        return redirect(url_for('show_url', id=id))
     cur.execute('INSERT INTO url_checks (url_id, status_code) VALUES (%s, %s)', (id, status_code,))
     conn.commit()
     cur.close()
