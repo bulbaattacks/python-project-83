@@ -13,10 +13,25 @@
         </tr>
         {% for url in all_urls %}
         <tr>
-            <th>{{ url[0] }}</th>
-            <th>{{ url[1] }}</th>
-            <th>{{ url[3] }}</th>
-            <th>{{ url[2] }}</th>
+            <td>{{ url[0] }}</td>
+            <td>
+                <a href='/urls/{{ url[0] }}'>{{ url[1] }}</a>
+            </td>
+            {% if url[3] %}
+            <td>{{ url[3] }}</td>
+            {% endif %}
+
+            {% if not url[3] %}
+            <td> </td>
+            {% endif %}
+
+            {% if url[2] %}
+            <td>{{ url[2] }}</td>
+            {% endif %}
+
+            {% if not url[2] %}
+            <td> </td>
+            {% endif %}
         </tr>
         {% endfor %}
 

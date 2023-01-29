@@ -6,6 +6,7 @@ from flask import Flask, render_template, flash, \
 import os
 from dotenv import load_dotenv
 import validators
+from bs4 import BeautifulSoup
 
 load_dotenv()
 
@@ -106,14 +107,21 @@ def check_url(id):
     name = cur.fetchone()[0]
     try:
         r = requests.get(name)
-        status_code = r.status_code
     except requests.exceptions.RequestException:
         conn.close()
         flash('Произошла ошибка при проверке', 'danger')
         return redirect(url_for('show_url', id=id))
+    status_code = r.status_code
+    html_content = r.text
+    soup = BeautifulSoup(html_content, 'html.parser')
+    h1 = soup.h1.text if soup.find('h1') else " "
+    title = soup.title.text if soup.find('title') else " "
+    description = soup.find("meta", attrs={"name": "description"})
+    description = description.get("content")[:255] if description else " "
     cur.execute('''
-        INSERT INTO url_checks (url_id, status_code)
-        VALUES (%s, %s)''', (id, status_code,))
+        INSERT INTO url_checks (url_id, status_code, h1, title, description)
+        VALUES (%s, %s, %s, %s, %s)''',
+                (id, status_code, h1, title, description,))
     conn.commit()
     cur.close()
     conn.close()
