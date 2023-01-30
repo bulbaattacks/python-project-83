@@ -28,7 +28,7 @@ def get_urls():
     cur.execute(open("database.sql", "r").read())
     cur.execute(
         '''
-        SELECT urls.id, urls.name, url_checks.status_code, url_checks.created_at
+        SELECT urls.id, urls.name, url_checks.status_code, DATE(url_checks.created_at)
         FROM urls
         LEFT JOIN url_checks on urls.id=url_checks.url_id
         AND url_checks.created_at =
@@ -80,14 +80,19 @@ def show_url(id):
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
     cur.execute(open("database.sql", "r").read())
-    cur.execute('SELECT * FROM urls WHERE urls.id = %s', (id,))
+    cur.execute('''
+                SELECT id, name, DATE(created_at)
+                FROM urls WHERE urls.id = %s
+                ''', (id,))
     result = cur.fetchone()
     if not result:
         cur.close()
         conn.close()
         return render_template('404.html'), 404
     cur.execute('''
-        SELECT * FROM url_checks
+        SELECT id, status_code, h1,
+        title, description, DATE(created_at), url_id
+        FROM url_checks
         WHERE url_checks.url_id = %s
         ORDER BY id DESC''', (id,))
     check = cur.fetchall()
