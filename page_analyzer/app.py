@@ -116,8 +116,8 @@ def check_url(id):
     soup = BeautifulSoup(html_content, 'html.parser')
     h1 = soup.h1.text if soup.find('h1') else " "
     title = soup.title.text if soup.find('title') else " "
-    descript = soup.find("meta", attrs={"name": "description"})
-    description = descript.get("content")[:255] if descript else " "
+    description = soup.find("meta", attrs={"name": "description"})
+    description = description.get("content")[:255] if description else " "
     cur.execute('''
         INSERT INTO url_checks (url_id, status_code, h1, title, description)
         VALUES (%s, %s, %s, %s, %s)''',
