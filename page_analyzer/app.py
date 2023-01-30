@@ -1,3 +1,4 @@
+from datetime import date
 import secrets
 import requests
 import psycopg2
@@ -117,7 +118,7 @@ def check_url(id):
     h1 = soup.h1.text if soup.find('h1') else " "
     title = soup.title.text if soup.find('title') else " "
     description = soup.find("meta", attrs={"name": "description"})
-    description = description.get("content")[:255] if description else " "
+    description = f'{description.get("content")[:255]}...' if description else " "
     cur.execute('''
         INSERT INTO url_checks (url_id, status_code, h1, title, description)
         VALUES (%s, %s, %s, %s, %s)''',
