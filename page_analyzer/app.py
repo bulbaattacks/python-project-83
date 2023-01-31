@@ -113,18 +113,18 @@ def check_url(id):
     name = cur.fetchone()[0]
     try:
         r = requests.get(name)
+        status_code = r.status_code
+        html_content = r.text
+        soup = BeautifulSoup(html_content, 'html.parser')
+        h1 = soup.h1.text if soup.find('h1') else " "
+        title = soup.title.text if soup.find('title') else " "
+        description = soup.find("meta", attrs={"name": "description"})
+        description = description.get("content")[:255] if description else " "
     except Exception:
         cur.close()
         conn.close()
         flash("Произошла ошибка при проверке", "danger")
         return redirect(url_for('show_url', id=id))
-    status_code = r.status_code
-    html_content = r.text
-    soup = BeautifulSoup(html_content, 'html.parser')
-    h1 = soup.h1.text if soup.find('h1') else " "
-    title = soup.title.text if soup.find('title') else " "
-    description = soup.find("meta", attrs={"name": "description"})
-    description = description.get("content")[:255] if description else " "
     cur.execute('''
         INSERT INTO url_checks (url_id, status_code, h1, title, description)
         VALUES (%s, %s, %s, %s, %s)''',
