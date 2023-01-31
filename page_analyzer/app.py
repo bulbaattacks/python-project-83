@@ -113,7 +113,6 @@ def check_url(id):
     name = cur.fetchone()[0]
     try:
         r = requests.get(name)
-        r.raise_for_status()
     except requests.exceptions.RequestException:
         conn.close()
         flash("Произошла ошибка при проверке", "danger")
