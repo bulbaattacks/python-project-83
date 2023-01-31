@@ -21,6 +21,9 @@ jobs:
         run: |
           pip install poetry
 
+      - name: Run linter
+        run: |
+          pip install flake8
 
       - name: Run linter
         run: |
