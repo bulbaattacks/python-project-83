@@ -114,7 +114,7 @@ def check_url(id):
         r = requests.get(name)
     except requests.exceptions.RequestException:
         conn.close()
-        flash('Произошла ошибка при проверке', 'danger')
+        flash("Произошла ошибка при проверке", "danger")
         return redirect(url_for('show_url', id=id))
     status_code = r.status_code
     html_content = r.text
