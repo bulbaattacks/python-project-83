@@ -113,7 +113,8 @@ def check_url(id):
     name = cur.fetchone()[0]
     try:
         r = requests.get(name)
-    except requests.exceptions.RequestException:
+    except Exception:
+        cur.close()
         conn.close()
         flash("Произошла ошибка при проверке", "danger")
         return redirect(url_for('show_url', id=id))
