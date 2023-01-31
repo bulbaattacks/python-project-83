@@ -123,7 +123,8 @@ def check_url(id):
         description = soup.find("meta", attrs={"name": "description"})
         description = description.get("content")[:255] if description else " "
         cur.execute('''
-                INSERT INTO url_checks (url_id, status_code, h1, title, description)
+                INSERT INTO url_checks
+                (url_id, status_code, h1, title, description)
                 VALUES (%s, %s, %s, %s, %s)''',
                     (id, status_code, h1, title, description,))
         conn.commit()
