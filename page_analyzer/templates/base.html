@@ -24,6 +24,7 @@
                 </ul>
             </div>
             </nav>
+        </header>
             {% with messages = get_flashed_messages(with_categories=True) %}
                 {% if messages %}
                     {% for category, message in messages %}
@@ -31,7 +32,6 @@
                     {% endfor %}
                 {% endif %}
             {% endwith %}
-        </header>
         <main class="flex-grow-1">
             <div class="container-lg mt-3">
                 {% block content %} layout content {% endblock%}
