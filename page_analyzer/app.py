@@ -120,17 +120,14 @@ def check_url(id):
         title = soup.title.text if soup.find('title') else " "
         description = soup.find("meta", attrs={"name": "description"})
         description = description.get("content")[:255] if description else " "
+        cur.execute('''
+                INSERT INTO url_checks (url_id, status_code, h1, title, description)
+                VALUES (%s, %s, %s, %s, %s)''',
+                    (id, status_code, h1, title, description,))
+        conn.commit()
+        flash("Страница успешно проверена", "success")
     except Exception:
-        cur.close()
-        conn.close()
         flash("Произошла ошибка при проверке", "danger")
-        return redirect(url_for('show_url', id=id))
-    cur.execute('''
-        INSERT INTO url_checks (url_id, status_code, h1, title, description)
-        VALUES (%s, %s, %s, %s, %s)''',
-                (id, status_code, h1, title, description,))
-    conn.commit()
     cur.close()
     conn.close()
-    flash("Страница успешно проверена", "success")
     return redirect(url_for('show_url', id=id))
