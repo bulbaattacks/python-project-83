@@ -114,6 +114,8 @@ def check_url(id):
     try:
         r = requests.get(name)
         status_code = r.status_code
+        if status_code != 200:
+            raise Exception
         html_content = r.text
         soup = BeautifulSoup(html_content, 'html.parser')
         h1 = soup.h1.text if soup.find('h1') else " "
