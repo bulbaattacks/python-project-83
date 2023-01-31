@@ -28,7 +28,7 @@ def get_urls():
     cur.execute(open("database.sql", "r").read())
     cur.execute(
         '''
-        SELECT urls.id, urls.name, url_checks.status_code, 
+        SELECT urls.id, urls.name, url_checks.status_code,
         DATE(url_checks.created_at)
         FROM urls
         LEFT JOIN url_checks on urls.id=url_checks.url_id
