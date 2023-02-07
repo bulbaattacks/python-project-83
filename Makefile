@@ -7,3 +7,9 @@ start:
 
 lint:
 	poetry run flake8 page_analyzer
+
+test:
+	poetry run pytest
+
+test-cov:
+	python3 -m pytest --cov=page_analyzer
