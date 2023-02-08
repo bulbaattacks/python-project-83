@@ -37,7 +37,7 @@ jobs:
           ./cc-test-reporter before-build
       - name: Test
         run: |
-          make test-coverage
+          make test-cov
       - name: Sending Reporter
         env:
           GITHUB_TOKEN: ${{ secrets.TEST_REPORTER_ID }}
