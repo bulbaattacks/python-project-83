@@ -115,6 +115,7 @@ def check_url(id):
         r = requests.get(name)
         status_code = r.status_code
         if status_code != 200:
+            flash("Произошла ошибка при проверке", "danger")
             raise Exception
         html_content = r.text
         soup = BeautifulSoup(html_content, 'html.parser')
