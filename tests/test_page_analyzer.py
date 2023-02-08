@@ -32,3 +32,8 @@ def test_add_url_wrong_data(client):
 def test_page_not_found(client):
     response = client.get('/urls/wrong_id')
     assert response.status_code == 404
+
+
+def test_add_url(client):
+    response = client.post('/urls', data={"url": "https://mail.ru"})
+    assert response.status_code == 302
