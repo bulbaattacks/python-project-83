@@ -34,6 +34,11 @@ def test_page_not_found(client):
     assert response.status_code == 404
 
 
-def test_add_url(client):
-    response = client.post('/urls', data={"url": "https://mail.ru"})
-    assert response.status_code == 302
+def test_get_urls(client):
+    response = client.get('/urls')
+    html = response.data.decode()
+    assert '<h1>Сайты</h1>' in html
+    assert '<th>ID</th>' in html
+    assert '<th>Имя</th>' in html
+    assert '<th>Последняя проверка</th>' in html
+    assert '<th>Код ответа</th>' in html
