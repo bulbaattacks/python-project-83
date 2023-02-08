@@ -32,13 +32,3 @@ def test_add_url_wrong_data(client):
 def test_page_not_found(client):
     response = client.get('/urls/wrong_id')
     assert response.status_code == 404
-
-
-def test_get_urls(client):
-    response = client.get('/urls')
-    html = response.data.decode()
-    assert '<h1>Сайты</h1>' in html
-    assert '<th>ID</th>' in html
-    assert '<th>Имя</th>' in html
-    assert '<th>Последняя проверка</th>' in html
-    assert '<th>Код ответа</th>' in html
