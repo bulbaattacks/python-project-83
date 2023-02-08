@@ -27,3 +27,8 @@ def test_index(client):
 def test_add_url_wrong_data(client):
     response = client.post('/urls', data={"url": "wrong_data"}, follow_redirects=True)
     assert response.status_code == 422
+
+
+def test_page_not_found(client):
+    response = client.get('/urls/wrong_id')
+    assert response.status_code == 404
