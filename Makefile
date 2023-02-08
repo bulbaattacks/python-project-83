@@ -12,4 +12,4 @@ test:
 	poetry run pytest
 
 test-cov:
-	python3 -m pytest --cov=page_analyzer
+	poetry run pytest --cov=page_analyzer tests/ --cov-report xml
