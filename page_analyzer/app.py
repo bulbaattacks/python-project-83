@@ -44,13 +44,17 @@ def get_urls():
     return render_template('all_urls.html', all_urls=result)
 
 
+def validate(url):
+    if not validators.url(url) or len(url) > 255:
+        flash("Некорректный URL", "danger")
+        if not url:
+            flash("URL обязателен", "danger")
+
+
 @app.post('/urls')
 def add_url():
     data = request.form.get("url")
-    if not validators.url(data) or len(data) > 255:
-        flash("Некорректный URL", "danger")
-        if not data:
-            flash("URL обязателен", "danger")
+    if not validate(data):
         return render_template('index.html', not_correct_data=data), 422
 
     conn = psycopg2.connect(DATABASE_URL)
