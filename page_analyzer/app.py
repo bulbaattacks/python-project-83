@@ -56,7 +56,6 @@ def add_url():
     data = request.form.get("url")
     if not_validate(data):
         return render_template('index.html', not_correct_data=data), 422
-
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
     cur.execute(open("database.sql", "r").read())
