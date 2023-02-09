@@ -112,11 +112,10 @@ def check_url(id):
     cur.execute('SELECT name FROM urls WHERE urls.id = %s', (id,))
     name = cur.fetchone()[0]
     try:
-        r = requests.get(name)
-        status_code = r.status_code
-        if status_code != 200:
-            raise Exception
-        html_content = r.text
+        response = requests.get(name)
+        response.raise_for_status()
+        status_code = response.status_code
+        html_content = response.text
         soup = BeautifulSoup(html_content, 'html.parser')
         h1 = soup.h1.text if soup.find('h1') else " "
         title = soup.title.text if soup.find('title') else " "
