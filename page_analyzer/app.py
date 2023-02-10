@@ -17,6 +17,10 @@ app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", secrets.token_urlsafe(16))
 DATABASE_URL = os.getenv('DATABASE_URL')
 
 
+def get_conn():
+    return psycopg2.connect(DATABASE_URL)
+
+
 @app.get('/')
 def index():
     return render_template('index.html')
@@ -24,7 +28,7 @@ def index():
 
 @app.get('/urls')
 def get_urls():
-    conn = psycopg2.connect(DATABASE_URL)
+    conn = get_conn()
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute(
         '''
@@ -57,7 +61,7 @@ def add_url():
     data = request.form.get("url")
     if not_validation(data):
         return render_template('index.html', not_correct_data=data), 422
-    conn = psycopg2.connect(DATABASE_URL)
+    conn = get_conn()
     cur = conn.cursor()
     cur.execute('SELECT * FROM urls WHERE urls.name = %s', (data,))
     result = cur.fetchone()
@@ -81,7 +85,7 @@ def add_url():
 
 @app.get('/urls/<int:id>')
 def show_url(id):
-    conn = psycopg2.connect(DATABASE_URL)
+    conn = get_conn()
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute('''
                 SELECT id, name, DATE(created_at) as created_at
@@ -107,7 +111,7 @@ def show_url(id):
 
 @app.post('/urls/<id>/checks')
 def check_url(id):
-    conn = psycopg2.connect(DATABASE_URL)
+    conn = get_conn()
     cur = conn.cursor()
     cur.execute('SELECT name FROM urls WHERE urls.id = %s', (id,))
     name = cur.fetchone()[0]
