@@ -2,27 +2,27 @@
 
 {% block content %}
 
-    <h1>Сайт: {{ show_url[1] }}</h1>
+    <h1>Сайт: {{ show_url.name }}</h1>
         <div class="table-responsive">
             <table class="table table-bordered table-hover text-nowrap" data-test="url">
                 <tbody>
                     <tr>
                       <td>ID</td>
-                      <td>{{ show_url[0] }}</td>
+                      <td>{{ show_url.id }}</td>
                     </tr>
                     <tr>
                       <td>Имя</td>
-                      <td>{{ show_url[1] }}</td>
+                      <td>{{ show_url.name }}</td>
                     </tr>
                     <tr>
                       <td>Дата создания</td>
-                      <td>{{ show_url[2] }}</td>
+                      <td>{{ show_url.created_at }}</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
     <h2 class="mt-5 mb-3">Проверки</h2>
-        <form method="post" action="/urls/{{ show_url[0] }}/checks">
+        <form method="post" action="/urls/{{ show_url.id }}/checks">
             <input type="submit" class="btn btn-primary" value="Запустить проверку">
         </form>
         <div>
@@ -38,12 +38,12 @@
                     </tr>
                     {% for check in check_url %}
                     <tr>
-                        <td>{{ check[0] }}</td>
-                        <td>{{ check[1] }}</td>
-                        <td>{{ check[2] }}</td>
-                        <td>{{ check[3] }}</td>
-                        <td>{{ check[4][:180] }}</td>
-                        <td>{{ check[5] }}</td>
+                        <td>{{ check.id }}</td>
+                        <td>{{ check.status_code }}</td>
+                        <td>{{ check.h1 }}</td>
+                        <td>{{ check.title }}</td>
+                        <td>{{ check.description[:180] }}</td>
+                        <td>{{ check.created_at }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>

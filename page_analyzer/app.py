@@ -1,6 +1,7 @@
 import secrets
 import requests
 import psycopg2
+from psycopg2.extras import RealDictCursor
 from flask import Flask, render_template, flash, \
     url_for, request, redirect
 import os
@@ -24,8 +25,7 @@ def index():
 @app.get('/urls')
 def get_urls():
     conn = psycopg2.connect(DATABASE_URL)
-    cur = conn.cursor()
-    cur.execute(open("database.sql", "r").read())
+    cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute(
         '''
         SELECT urls.id, urls.name, url_checks.status_code,
@@ -59,7 +59,6 @@ def add_url():
         return render_template('index.html', not_correct_data=data), 422
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
-    cur.execute(open("database.sql", "r").read())
     cur.execute('SELECT * FROM urls WHERE urls.name = %s', (data,))
     result = cur.fetchone()
     conn.commit()
@@ -83,10 +82,9 @@ def add_url():
 @app.get('/urls/<int:id>')
 def show_url(id):
     conn = psycopg2.connect(DATABASE_URL)
-    cur = conn.cursor()
-    cur.execute(open("database.sql", "r").read())
+    cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute('''
-                SELECT id, name, DATE(created_at)
+                SELECT id, name, DATE(created_at) as created_at
                 FROM urls WHERE urls.id = %s
                 ''', (id,))
     result = cur.fetchone()
@@ -96,7 +94,7 @@ def show_url(id):
         return render_template('404.html'), 404
     cur.execute('''
         SELECT id, status_code, h1,
-        title, description, DATE(created_at), url_id
+        title, description, DATE(created_at) as created_at, url_id
         FROM url_checks
         WHERE url_checks.url_id = %s
         ORDER BY id DESC''', (id,))
@@ -111,8 +109,6 @@ def show_url(id):
 def check_url(id):
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
-    cur.execute(open("database.sql", "r").read())
-
     cur.execute('SELECT name FROM urls WHERE urls.id = %s', (id,))
     name = cur.fetchone()[0]
     try:

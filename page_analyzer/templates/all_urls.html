@@ -13,28 +13,12 @@
         </tr>
         {% for url in all_urls %}
         <tr>
-            <td>{{ url[0] }}</td>
-            <td>
-                <a href='/urls/{{ url[0] }}'>{{ url[1] }}</a>
-            </td>
-            {% if url[3] %}
-            <td>{{ url[3] }}</td>
-            {% endif %}
-
-            {% if not url[3] %}
-            <td> </td>
-            {% endif %}
-
-            {% if url[2] %}
-            <td>{{ url[2] }}</td>
-            {% endif %}
-
-            {% if not url[2] %}
-            <td> </td>
-            {% endif %}
+            <td>{{ url.id }}</td>
+            <td><a href="/urls/{{ url.id }}">{{ url.name }}</a></td>
+            <td>{{ url.created_at }}</td>
+            <td>{{ url.status_code }}</td>
         </tr>
         {% endfor %}
-
         </tbody>
     </table>
 </div>
