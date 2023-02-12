@@ -86,25 +86,26 @@ def add_url():
 @app.get('/urls/<int:id>')
 def show_url(id):
     conn = get_conn()
-    cur = conn.cursor(cursor_factory=RealDictCursor)
-    cur.execute('''
+    with conn.cursor(cursor_factory=RealDictCursor) as curs:
+        curs.execute('''
                 SELECT id, name, DATE(created_at) as created_at
                 FROM urls WHERE urls.id = %s
                 ''', (id,))
-    result = cur.fetchone()
+        result = curs.fetchone()
     if not result:
-        cur.close()
+        curs.close()
         conn.close()
         return render_template('404.html'), 404
-    cur.execute('''
-        SELECT id, status_code, h1,
-        title, description, DATE(created_at) as created_at, url_id
-        FROM url_checks
-        WHERE url_checks.url_id = %s
-        ORDER BY id DESC''', (id,))
-    check = cur.fetchall()
+    with conn.cursor(cursor_factory=RealDictCursor) as curs:
+        curs.execute('''
+            SELECT id, status_code, h1,
+            title, description, DATE(created_at) as created_at, url_id
+            FROM url_checks
+            WHERE url_checks.url_id = %s
+            ORDER BY id DESC''', (id,))
+        check = curs.fetchall()
     conn.commit()
-    cur.close()
+    curs.close()
     conn.close()
     return render_template('show.html', check_url=check, show_url=result)
 
