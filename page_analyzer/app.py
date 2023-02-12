@@ -132,7 +132,7 @@ def check_url(id):
                 INSERT INTO url_checks
                 (url_id, status_code, h1, title, description)
                 VALUES (%s, %s, %s, %s, %s)''',
-                    (id, status_code, h1, title, description,))
+                         (id, status_code, h1, title, description,))
         conn.commit()
         flash("Страница успешно проверена", "success")
     except Exception:
