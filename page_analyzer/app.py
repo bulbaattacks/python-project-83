@@ -43,7 +43,6 @@ def get_urls():
             ORDER BY urls.id DESC
             ''')
         result = curs.fetchall()
-    curs.close()
     conn.close()
     return render_template('all_urls.html', all_urls=result)
 
@@ -66,7 +65,6 @@ def add_url():
         curs.execute('SELECT * FROM urls WHERE urls.name = %s', (data,))
         result = curs.fetchone()
     conn.commit()
-
     if not result:
         with conn.cursor() as curs:
             curs.execute('INSERT INTO urls (name) VALUES (%s)', (data,))
@@ -74,12 +72,10 @@ def add_url():
             id = curs.fetchone()[0]
         conn.commit()
         flash("Страница успешно добавлена", "success")
-        curs.close()
         conn.close()
         return redirect(url_for("show_url", id=id))
     id = result[0]
     flash("Страница уже существует", "info")
-    curs.close()
     conn.close()
     return redirect(url_for("show_url", id=id))
 
@@ -106,7 +102,6 @@ def show_url(id):
             ORDER BY id DESC''', (id,))
         check = curs.fetchall()
     conn.commit()
-    curs.close()
     conn.close()
     return render_template('show.html', check_url=check, show_url=result)
 
@@ -137,6 +132,5 @@ def check_url(id):
         flash("Страница успешно проверена", "success")
     except Exception:
         flash("Произошла ошибка при проверке", "danger")
-    curs.close()
     conn.close()
     return redirect(url_for('show_url', id=id))
