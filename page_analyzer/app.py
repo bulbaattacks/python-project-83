@@ -29,21 +29,21 @@ def index():
 @app.get('/urls')
 def get_urls():
     conn = get_conn()
-    cur = conn.cursor(cursor_factory=RealDictCursor)
-    cur.execute(
-        '''
-        SELECT urls.id, urls.name, url_checks.status_code,
-        DATE(url_checks.created_at)
-        FROM urls
-        LEFT JOIN url_checks on urls.id=url_checks.url_id
-        AND url_checks.created_at =
-            (SELECT MAX(created_at)
-                FROM url_checks
-                WHERE url_id = urls.id)
-        ORDER BY urls.id DESC
-        ''')
-    result = cur.fetchall()
-    cur.close()
+    with conn.cursor(cursor_factory=RealDictCursor) as curs:
+        curs.execute(
+            '''
+            SELECT urls.id, urls.name, url_checks.status_code,
+            DATE(url_checks.created_at)
+            FROM urls
+            LEFT JOIN url_checks on urls.id=url_checks.url_id
+            AND url_checks.created_at =
+                (SELECT MAX(created_at)
+                    FROM url_checks
+                    WHERE url_id = urls.id)
+            ORDER BY urls.id DESC
+            ''')
+        result = curs.fetchall()
+    curs.close()
     conn.close()
     return render_template('all_urls.html', all_urls=result)
 
@@ -62,23 +62,24 @@ def add_url():
     if not_validation(data):
         return render_template('index.html', not_correct_data=data), 422
     conn = get_conn()
-    cur = conn.cursor()
-    cur.execute('SELECT * FROM urls WHERE urls.name = %s', (data,))
-    result = cur.fetchone()
+    with conn.cursor() as curs:
+        curs.execute('SELECT * FROM urls WHERE urls.name = %s', (data,))
+        result = curs.fetchone()
     conn.commit()
 
     if not result:
-        cur.execute('INSERT INTO urls (name) VALUES (%s)', (data,))
-        cur.execute('SELECT id FROM urls WHERE urls.name = %s', (data,))
-        id = cur.fetchone()[0]
+        with conn.cursor() as curs:
+            curs.execute('INSERT INTO urls (name) VALUES (%s)', (data,))
+            curs.execute('SELECT id FROM urls WHERE urls.name = %s', (data,))
+            id = curs.fetchone()[0]
         conn.commit()
         flash("Страница успешно добавлена", "success")
-        cur.close()
+        curs.close()
         conn.close()
         return redirect(url_for("show_url", id=id))
     id = result[0]
     flash("Страница уже существует", "info")
-    cur.close()
+    curs.close()
     conn.close()
     return redirect(url_for("show_url", id=id))
 
@@ -113,9 +114,9 @@ def show_url(id):
 @app.post('/urls/<id>/checks')
 def check_url(id):
     conn = get_conn()
-    cur = conn.cursor()
-    cur.execute('SELECT name FROM urls WHERE urls.id = %s', (id,))
-    name = cur.fetchone()[0]
+    with conn.cursor() as curs:
+        curs.execute('SELECT name FROM urls WHERE urls.id = %s', (id,))
+        name = curs.fetchone()[0]
     try:
         response = requests.get(name)
         response.raise_for_status()
@@ -126,7 +127,8 @@ def check_url(id):
         title = soup.title.text if soup.find('title') else " "
         description = soup.find("meta", attrs={"name": "description"})
         description = description.get("content") if description else " "
-        cur.execute('''
+        with conn.cursor() as curs:
+            curs.execute('''
                 INSERT INTO url_checks
                 (url_id, status_code, h1, title, description)
                 VALUES (%s, %s, %s, %s, %s)''',
@@ -135,6 +137,6 @@ def check_url(id):
         flash("Страница успешно проверена", "success")
     except Exception:
         flash("Произошла ошибка при проверке", "danger")
-    cur.close()
+    curs.close()
     conn.close()
     return redirect(url_for('show_url', id=id))
