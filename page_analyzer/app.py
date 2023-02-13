@@ -1,5 +1,4 @@
 import secrets
-import requests
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from flask import Flask, render_template, flash, \
@@ -7,7 +6,8 @@ from flask import Flask, render_template, flash, \
 import os
 from dotenv import load_dotenv
 from page_analyzer.validator import validation
-from bs4 import BeautifulSoup
+from page_analyzer.parser import parse
+
 
 load_dotenv()
 
@@ -106,15 +106,11 @@ def check_url(id):
         curs.execute('SELECT name FROM urls WHERE urls.id = %s', (id,))
         name = curs.fetchone()[0]
     try:
-        response = requests.get(name)
-        response.raise_for_status()
-        status_code = response.status_code
-        html_content = response.text
-        soup = BeautifulSoup(html_content, 'html.parser')
-        h1 = soup.h1.text if soup.find('h1') else " "
-        title = soup.title.text if soup.find('title') else " "
-        description = soup.find("meta", attrs={"name": "description"})
-        description = description.get("content") if description else " "
+        parser = parse(name)
+        status_code = parser.get('status_code')
+        h1 = parser.get('h1')
+        title = parser.get('title')
+        description = parser.get('description')
         with conn.cursor() as curs:
             curs.execute('''
                 INSERT INTO url_checks
