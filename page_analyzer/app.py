@@ -6,7 +6,7 @@ from flask import Flask, render_template, flash, \
     url_for, request, redirect
 import os
 from dotenv import load_dotenv
-import validators
+from page_analyzer.validator import validation
 from bs4 import BeautifulSoup
 
 load_dotenv()
@@ -47,18 +47,11 @@ def get_urls():
     return render_template('all_urls.html', all_urls=result)
 
 
-def not_validation(data):
-    if not validators.url(data) or len(data) > 255:
-        flash("Некорректный URL", "danger")
-        if not data:
-            flash("URL обязателен", "danger")
-        return True
-
-
 @app.post('/urls')
 def add_url():
     data = request.form.get("url")
-    if not_validation(data):
+    errors = validation(data)
+    if errors:
         return render_template('index.html', not_correct_data=data), 422
     conn = get_conn()
     with conn.cursor() as curs:
