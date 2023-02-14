@@ -6,7 +6,7 @@ from flask import Flask, render_template, flash, \
 import os
 from dotenv import load_dotenv
 from page_analyzer.url import validate
-from page_analyzer.parser import parse
+from page_analyzer.parser import prepare_seo_data
 
 
 load_dotenv()
@@ -106,7 +106,7 @@ def check_url(id):
         curs.execute('SELECT name FROM urls WHERE urls.id = %s', (id,))
         name = curs.fetchone()[0]
     try:
-        parser = parse(name)
+        parser = prepare_seo_data(name)
         status_code = parser.get('status_code')
         h1 = parser.get('h1')
         title = parser.get('title')

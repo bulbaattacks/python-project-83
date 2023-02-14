@@ -2,9 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def parse(name):
+def prepare_seo_data(url):
     parse_dict = {}
-    response = requests.get(name)
+    response = requests.get(url)
     response.raise_for_status()
     parse_dict['status_code'] = response.status_code
     html_content = response.text
