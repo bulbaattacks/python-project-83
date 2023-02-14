@@ -53,6 +53,8 @@ def add_url():
     data = request.form.get("url")
     errors = validate(data)
     if errors:
+        for i in errors:
+            flash(i, "danger")
         return render_template('index.html', not_correct_data=data), 422
     conn = get_conn()
     with conn:

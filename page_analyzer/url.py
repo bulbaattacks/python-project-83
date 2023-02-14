@@ -1,11 +1,10 @@
 import validators
-from flask import flash, get_flashed_messages
 
 
 def validate(url):
+    errors_list = []
     if not validators.url(url) or len(url) > 255:
-        flash("Некорректный URL", "danger")
+        errors_list.append("Некорректный URL")
         if not url:
-            flash("URL обязателен", "danger")
-        errors_list = get_flashed_messages(with_categories=True)
+            errors_list.append("URL обязателен")
         return errors_list
