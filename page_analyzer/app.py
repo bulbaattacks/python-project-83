@@ -5,7 +5,7 @@ from flask import Flask, render_template, flash, \
     url_for, request, redirect
 import os
 from dotenv import load_dotenv
-from page_analyzer.validator import validation
+from page_analyzer.url import validate
 from page_analyzer.parser import parse
 
 
@@ -50,7 +50,7 @@ def get_urls():
 @app.post('/urls')
 def add_url():
     data = request.form.get("url")
-    errors = validation(data)
+    errors = validate(data)
     if errors:
         return render_template('index.html', not_correct_data=data), 422
     conn = get_conn()
