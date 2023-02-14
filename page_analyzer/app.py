@@ -63,7 +63,8 @@ def add_url():
         if not result:
             with conn.cursor() as curs:
                 curs.execute('INSERT INTO urls (name) VALUES (%s)', (data,))
-                curs.execute('SELECT id FROM urls WHERE urls.name = %s', (data,))
+                curs.execute('SELECT id FROM urls WHERE urls.name = %s',
+                             (data,))
                 id = curs.fetchone()[0]
             conn.commit()
             flash("Страница успешно добавлена", "success")
