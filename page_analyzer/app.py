@@ -61,7 +61,8 @@ def add_url():
             curs.execute('SELECT * FROM urls WHERE urls.name = %s', (data,))
             result = curs.fetchone()
         if not result:
-            with conn.cursor(cursor_factory=psycopg2.extras.NamedTupleCursor) as curs:
+            with conn.cursor(cursor_factory=psycopg2.extras.NamedTupleCursor) \
+                    as curs:
                 curs.execute('INSERT INTO urls (name) VALUES (%s)', (data,))
                 curs.execute('SELECT id FROM urls WHERE urls.name = %s',
                              (data,))
@@ -100,7 +101,8 @@ def show_url(id):
 def check_url(id):
     conn = get_conn()
     with conn:
-        with conn.cursor(cursor_factory=psycopg2.extras.NamedTupleCursor) as curs:
+        with conn.cursor(cursor_factory=psycopg2.extras.NamedTupleCursor) \
+                as curs:
             curs.execute('SELECT name FROM urls WHERE urls.id = %s', (id,))
             name = curs.fetchone().name
         try:
