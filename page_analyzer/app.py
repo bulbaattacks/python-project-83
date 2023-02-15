@@ -61,11 +61,11 @@ def add_url():
             curs.execute('SELECT * FROM urls WHERE urls.name = %s', (data,))
             result = curs.fetchone()
         if not result:
-            with conn.cursor() as curs:
+            with conn.cursor(cursor_factory=psycopg2.extras.NamedTupleCursor) as curs:
                 curs.execute('INSERT INTO urls (name) VALUES (%s)', (data,))
                 curs.execute('SELECT id FROM urls WHERE urls.name = %s',
                              (data,))
-                id = curs.fetchone()[0]
+                id = curs.fetchone().id
             flash("Страница успешно добавлена", "success")
             return redirect(url_for("show_url", id=id))
         id = result[0]
@@ -84,8 +84,6 @@ def show_url(id):
                     ''', (id,))
             result = curs.fetchone()
         if not result:
-            curs.close()
-            conn.close()
             return render_template('404.html'), 404
         with conn.cursor(cursor_factory=RealDictCursor) as curs:
             curs.execute('''
@@ -102,9 +100,9 @@ def show_url(id):
 def check_url(id):
     conn = get_conn()
     with conn:
-        with conn.cursor() as curs:
+        with conn.cursor(cursor_factory=psycopg2.extras.NamedTupleCursor) as curs:
             curs.execute('SELECT name FROM urls WHERE urls.id = %s', (id,))
-            name = curs.fetchone()[0]
+            name = curs.fetchone().name
         try:
             status_code = prepare_seo_data(name).get('status_code')
             h1 = prepare_seo_data(name).get('h1')
