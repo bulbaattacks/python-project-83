@@ -57,7 +57,8 @@ def add_url():
         return render_template('index.html', not_correct_data=data), 422
     conn = get_conn()
     with conn:
-        with conn.cursor() as curs:
+        with conn.cursor(cursor_factory=psycopg2.extras.NamedTupleCursor) \
+                as curs:
             curs.execute('SELECT * FROM urls WHERE urls.name = %s', (data,))
             result = curs.fetchone()
         if not result:
@@ -69,7 +70,7 @@ def add_url():
                 id = curs.fetchone().id
             flash("Страница успешно добавлена", "success")
             return redirect(url_for("show_url", id=id))
-        id = result[0]
+        id = result.id
         flash("Страница уже существует", "info")
     return redirect(url_for("show_url", id=id))
 
