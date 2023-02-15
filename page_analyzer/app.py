@@ -107,10 +107,11 @@ def check_url(id):
             curs.execute('SELECT name FROM urls WHERE urls.id = %s', (id,))
             name = curs.fetchone().name
         try:
-            status_code = prepare_seo_data(name).get('status_code')
-            h1 = prepare_seo_data(name).get('h1')
-            title = prepare_seo_data(name).get('title')
-            description = prepare_seo_data(name).get('description')
+            prepared_data = prepare_seo_data(name)
+            status_code = prepared_data.get('status_code')
+            h1 = prepared_data.get('h1')
+            title = prepared_data.get('title')
+            description = prepared_data.get('description')
             with conn.cursor() as curs:
                 curs.execute('''
                     INSERT INTO url_checks

@@ -12,5 +12,9 @@ Page analyzer is a simple web-application to get web-site base SEO characteristi
 ### How to run 
 1. Clone this repository
 2. Install dependencies by poetry install
-3. Add .env file with DATABASE_URL and SECRET_KEY variables
+3. Copy the content from .env.sample and paste it in your .env file.
+`
+cp .env.sample .env
+`
+
 4. Run one of commands make dev or make start
