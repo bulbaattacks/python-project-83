@@ -44,7 +44,6 @@ def get_urls():
                 ORDER BY urls.id DESC
                 ''')
             result = curs.fetchall()
-    conn.close()
     return render_template('all_urls.html', all_urls=result)
 
 
@@ -61,19 +60,16 @@ def add_url():
         with conn.cursor() as curs:
             curs.execute('SELECT * FROM urls WHERE urls.name = %s', (data,))
             result = curs.fetchone()
-        conn.commit()
         if not result:
             with conn.cursor() as curs:
                 curs.execute('INSERT INTO urls (name) VALUES (%s)', (data,))
                 curs.execute('SELECT id FROM urls WHERE urls.name = %s',
                              (data,))
                 id = curs.fetchone()[0]
-            conn.commit()
             flash("Страница успешно добавлена", "success")
             return redirect(url_for("show_url", id=id))
         id = result[0]
         flash("Страница уже существует", "info")
-    conn.close()
     return redirect(url_for("show_url", id=id))
 
 
@@ -99,8 +95,6 @@ def show_url(id):
                 WHERE url_checks.url_id = %s
                 ORDER BY id DESC''', (id,))
             check = curs.fetchall()
-    conn.commit()
-    conn.close()
     return render_template('show.html', check_url=check, show_url=result)
 
 
@@ -123,9 +117,7 @@ def check_url(id):
                     (url_id, status_code, h1, title, description)
                     VALUES (%s, %s, %s, %s, %s)''',
                              (id, status_code, h1, title, description,))
-            conn.commit()
             flash("Страница успешно проверена", "success")
         except Exception:
             flash("Произошла ошибка при проверке", "danger")
-    conn.close()
     return redirect(url_for('show_url', id=id))
