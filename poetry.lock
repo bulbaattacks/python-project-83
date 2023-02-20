@@ -215,7 +215,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "packaging"
-version = "23.0"
+version = "23.0.1"
 description = "Core utilities for Python packages"
 category = "main"
 optional = false
