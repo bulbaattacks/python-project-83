@@ -2,12 +2,11 @@ import secrets
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from flask import Flask, render_template, flash, \
-    url_for, request, redirect
+    url_for, request, redirect, session
 import os
 from dotenv import load_dotenv
 from page_analyzer.url import validate
 from page_analyzer.parser import prepare_seo_data
-
 
 load_dotenv()
 
@@ -15,6 +14,16 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", secrets.token_urlsafe(16))
 
 DATABASE_URL = os.getenv('DATABASE_URL')
+
+
+@app.before_request
+def init_db_connection():
+    if session.get('count') is None:
+        conn = get_conn()
+        with conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as curs:
+                curs.execute(open("database.sql", "r").read())
+        session['count'] = 0
 
 
 def get_conn():
