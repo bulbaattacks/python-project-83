@@ -22,7 +22,7 @@ def init_db_connection():
         conn = get_conn()
         with conn:
             with conn.cursor(cursor_factory=RealDictCursor) as curs:
-                curs.execute(open("database.sql", "r").read())
+                curs.execute(open(f'{os.getcwd()}/database.sql', "r").read())
         session['count'] = 0
 
 
