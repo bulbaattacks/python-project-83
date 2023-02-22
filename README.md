@@ -18,3 +18,15 @@ cp .env.sample .env
 `
 
 4. Run one of commands make dev or make start
+
+Build with:
+
+Python
+Flask
+Bootstrap
+Jinja2
+Beautiful Soup
+Requests
+Pytest
+PostgreSQL
+Flake8
