@@ -7,7 +7,6 @@
 
 ## About
 Page analyzer is a simple web-application to get web-site base SEO characteristics.  
-[You can take look at deployed app here.](https://python-project-83-production-c136.up.railway.app)
 
 ### How to run 
 1. Clone this repository
