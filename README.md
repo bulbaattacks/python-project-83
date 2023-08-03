@@ -8,7 +8,7 @@
 ## About
 Web-приложение «Анализатор страниц» анализирует страницы на SEO-пригодность по аналогии с [PageSpeed Insights](https://pagespeed.web.dev). Приложение написано на базе фреймворка Flask. Фронтенд - на bootstrap.Для работы с базой данных PosgreSQL применена библиотека psycopg.
 
-The Page Analyzer web application analyzes pages for SEO suitability similar to PageSpeed ​​Insights(https://pagespeed.web.dev). The application is written based on the Flask framework. Frontend - on bootstrap. The psycopg library is used to work with the PosgreSQL database.
+The Page Analyzer web application analyzes pages for SEO suitability similar to [PageSpeed ​​Insights](https://pagespeed.web.dev). The application is written based on the Flask framework. Frontend - on bootstrap. The psycopg library is used to work with the PosgreSQL database.
 
 ### How to run 
 1. Clone this repository
